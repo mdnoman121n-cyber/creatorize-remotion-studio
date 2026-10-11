@@ -84,12 +84,16 @@ cd creatorize-remotion-studio
 # Navigate to app directory
 cd app
 
-# Install dependencies
+# Install dependencies (on Windows PowerShell, you can use npm.cmd if scripts are restricted)
 npm install
+# or: npm.cmd install
 
 # Start the local studio server
 npm run dev
+# or: npm.cmd run dev
 ```
+
+> **Windows PowerShell Tip:** If you see `File npm.ps1 cannot be loaded because running scripts is disabled`, either use `npm.cmd run dev` or run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` in PowerShell.
 
 Open `http://localhost:5173` in your browser.
 
