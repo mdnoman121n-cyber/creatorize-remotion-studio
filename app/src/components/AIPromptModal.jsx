@@ -12,98 +12,72 @@ export const AIPromptModal = ({ scene, projectConfig, onClose }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(promptText);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    setTimeout(() => setCopied(false), 2200);
   };
 
+  const agents = [
+    { id: 'antigravity', name: 'Google Antigravity IDE' },
+    { id: 'claude', name: 'Claude Code CLI' },
+    { id: 'cursor', name: 'Cursor' },
+    { id: 'codex', name: 'OpenAI Codex' }
+  ];
+
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-        {/* Modal Header */}
-        <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-window" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: 28, height: 28, borderRadius: '6px', background: 'rgba(99, 102, 241, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-indigo)' }}>
+              <svg className="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">AI Agent Prompt Generator</h2>
-              <p className="text-[11px] text-slate-400">
-                Copy and paste into your local coding assistant (Claude, Antigravity, Cursor, Codex)
-              </p>
+              <div style={{ fontSize: '13px', fontWeight: 800, color: '#ffffff' }}>
+                AI Agent Prompt Synthesizer
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                Scene #{scene.index} • {scene.durationFrames} Frames • {scene.visualTheme}
+              </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <button onClick={onClose} className="btn btn-secondary" style={{ padding: '4px 8px' }}>
+            ✕
           </button>
         </div>
 
-        {/* Agent Target Pills */}
-        <div className="px-5 py-3 bg-slate-950/40 border-b border-slate-800 flex items-center gap-2">
-          <span className="text-xs text-slate-400 mr-2">Target AI Assistant:</span>
-          {['Antigravity IDE', 'Claude Code CLI', 'Cursor', 'OpenAI Codex'].map((agent) => (
-            <button
-              key={agent}
-              onClick={() => setSelectedAgent(agent.toLowerCase().split(' ')[0])}
-              className={`px-2.5 py-1 rounded text-xs font-medium transition ${
-                selectedAgent === agent.toLowerCase().split(' ')[0]
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {agent}
-            </button>
-          ))}
+        {/* Body */}
+        <div className="modal-body">
+          {/* Assistant Selector */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Target Assistant:</span>
+            {agents.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => setSelectedAgent(a.id)}
+                className={`btn ${selectedAgent === a.id ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ fontSize: '11px', padding: '4px 10px' }}
+              >
+                {a.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Prompt Codebox */}
+          <div className="code-snippet-box">
+            {promptText}
+          </div>
         </div>
 
-        {/* Prompt Content */}
-        <div className="p-5 overflow-y-auto flex-1 font-mono text-xs bg-slate-950/80 text-slate-300 leading-relaxed whitespace-pre-wrap select-all">
-          {promptText}
-        </div>
-
-        {/* Footer Actions */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400">
-            Target File:{' '}
-            <span className="font-mono text-indigo-400">src/remotion/scenes/{scene.componentFile}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
-            >
-              Close
-            </button>
-            <button
-              onClick={handleCopy}
-              className={`px-5 py-2 text-xs font-semibold rounded-lg shadow-lg transition flex items-center gap-2 ${
-                copied
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30'
-              }`}
-            >
-              {copied ? (
-                <>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Prompt Copied!
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                  </svg>
-                  Copy Prompt for Agent
-                </>
-              )}
-            </button>
-          </div>
+        {/* Footer */}
+        <div className="modal-footer">
+          <button onClick={onClose} className="btn btn-secondary">
+            Close
+          </button>
+          <button onClick={handleCopy} className={`btn ${copied ? 'btn-secondary' : 'btn-gradient'}`}>
+            {copied ? '✓ Prompt Copied to Clipboard!' : 'Copy Prompt for Agent'}
+          </button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { VideoComposition } from '../remotion/Root';
 import { formatFrames, formatTime } from '../utils/timeUtils';
 
@@ -12,9 +12,7 @@ export const VideoPlayer = ({
   timeline,
   activeSceneIndex
 }) => {
-  const containerRef = useRef(null);
-
-  // Playback timer loop
+  // Real-time playback frame ticker
   useEffect(() => {
     let interval = null;
     if (isPlaying) {
@@ -41,34 +39,53 @@ export const VideoPlayer = ({
     setCurrentFrame((prev) => Math.min(totalFrames, prev + 1));
   };
 
+  const handleSkipStart = () => {
+    setIsPlaying(false);
+    setCurrentFrame(0);
+  };
+
+  const handleSkipEnd = () => {
+    setIsPlaying(false);
+    setCurrentFrame(totalFrames);
+  };
+
   const currentTimeSec = currentFrame / fps;
   const totalTimeSec = totalFrames / fps;
+  const currentScene = timeline.scenes?.[activeSceneIndex];
 
   return (
-    <div className="flex flex-col bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-      {/* Top player bar */}
-      <div className="h-10 bg-slate-950/80 border-b border-slate-800 px-4 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 font-semibold text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Remotion Live Canvas
+    <div className="viewport-panel">
+      {/* Top Viewport Header */}
+      <div className="viewport-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: '#e2e8f0' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }} />
+            REMOTION LIVE CANVAS
           </span>
-          <span className="font-mono text-slate-500">1920x1080 (16:9)</span>
+          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-dim)', fontSize: '11px' }}>
+            1920×1080 (16:9)
+          </span>
         </div>
 
-        {/* Timecodes */}
-        <div className="flex items-center gap-4 font-mono">
-          <span className="text-cyan-400 font-bold">{formatFrames(currentFrame, fps)}</span>
-          <span className="text-slate-600">/</span>
-          <span className="text-slate-400">{formatFrames(totalFrames, fps)}</span>
-          <span className="text-slate-600">|</span>
-          <span className="text-slate-300">{formatTime(currentTimeSec)}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {currentScene && (
+            <span style={{ color: 'var(--accent-indigo)', fontWeight: 600, fontSize: '11px' }}>
+              SCENE {currentScene.index}: {currentScene.transcript.slice(0, 40)}...
+            </span>
+          )}
+          <div className="timecode-display">
+            <span className="tc-active">{formatFrames(currentFrame, fps)}</span>
+            <span className="tc-dim">/</span>
+            <span>{formatFrames(totalFrames, fps)}</span>
+            <span className="tc-dim">|</span>
+            <span style={{ color: '#cbd5e1' }}>{formatTime(currentTimeSec)}</span>
+          </div>
         </div>
       </div>
 
-      {/* Video Viewport */}
-      <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
-        <div className="w-full h-full">
+      {/* Center 16:9 Stage */}
+      <div className="viewport-stage-wrap">
+        <div className="canvas-frame">
           <VideoComposition
             currentFrame={currentFrame}
             timeline={timeline}
@@ -77,66 +94,67 @@ export const VideoPlayer = ({
         </div>
       </div>
 
-      {/* Control bar */}
-      <div className="h-12 bg-slate-950/90 border-t border-slate-800 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {/* Step Back 1 Frame */}
-          <button
-            onClick={handleStepBack}
-            title="Step Back 1 Frame"
-            className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+      {/* Bottom Transport Controls Bar */}
+      <div className="viewport-controls-bar">
+        {/* Playback Transport Buttons */}
+        <div className="transport-buttons">
+          <button onClick={handleSkipStart} className="transport-btn" title="Skip to Beginning">
+            <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
             </svg>
           </button>
 
-          {/* Play / Pause */}
+          <button onClick={handleStepBack} className="transport-btn" title="Previous Frame (Left Arrow)">
+            <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg transition"
+            className="transport-btn play-btn"
+            title={isPlaying ? 'Pause' : 'Play (Spacebar)'}
           >
             {isPlaying ? (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="icon-sm" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
               </svg>
             ) : (
-              <svg className="w-4 h-4 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="icon-sm" style={{ transform: 'translateX(1px)' }} fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
             )}
           </button>
 
-          {/* Step Forward 1 Frame */}
-          <button
-            onClick={handleStepForward}
-            title="Step Forward 1 Frame"
-            className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+          <button onClick={handleStepForward} className="transport-btn" title="Next Frame (Right Arrow)">
+            <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <button onClick={handleSkipEnd} className="transport-btn" title="Skip to End">
+            <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        {/* Progress scrub bar */}
-        <div className="flex-1 max-w-xl mx-6">
-          <input
-            type="range"
-            min={0}
-            max={totalFrames || 1}
-            value={currentFrame}
-            onChange={(e) => {
-              setIsPlaying(false);
-              setCurrentFrame(parseInt(e.target.value));
-            }}
-            className="w-full accent-indigo-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
-          />
-        </div>
+        {/* Live Scrubber Slider */}
+        <input
+          type="range"
+          min={0}
+          max={totalFrames || 1}
+          value={currentFrame}
+          onChange={(e) => {
+            setIsPlaying(false);
+            setCurrentFrame(parseInt(e.target.value));
+          }}
+          className="scrubber-slider"
+        />
 
-        {/* Quick jump */}
-        <div className="text-xs text-slate-400 font-mono">
-          {((currentFrame / (totalFrames || 1)) * 100).toFixed(1)}%
+        {/* Progress Percentage */}
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-dim)', minWidth: '45px', textAlign: 'right' }}>
+          {((currentFrame / (totalFrames || 1)) * 100).toFixed(0)}%
         </div>
       </div>
     </div>
