@@ -1,0 +1,15 @@
+1
+00:00:00,000 --> 00:00:04,500
+In the early 1990s, the internet was an empty frontier waiting for its first pioneers.
+
+2
+00:00:04,500 --> 00:00:10,200
+By 1998, server rooms across Silicon Valley were overheating under unprecedented traffic.
+
+3
+00:00:10,200 --> 00:00:16,000
+Dot-com startups were burning millions on billboard ads and fiber optic infrastructure.
+
+4
+00:00:16,000 --> 00:00:21,500
+And yet, amidst the chaos, the modern digital architecture we rely on today was born.

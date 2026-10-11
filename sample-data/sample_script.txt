@@ -1,0 +1,17 @@
+# Documentary Script: The Dawn of the Digital Frontier
+
+Scene 1 [00:00 - 00:04.5]:
+"In the early 1990s, the internet was an empty frontier waiting for its first pioneers."
+Visual: 3D Retro wireframe cyberspace grid, early computer monitor glow, pixelated typography.
+
+Scene 2 [00:04.5 - 00:10.2]:
+"By 1998, server rooms across Silicon Valley were overheating under unprecedented traffic."
+Visual: Isometric 3D server room with flashing status LEDs, data packets moving along fiber lines.
+
+Scene 3 [00:10.2 - 00:16.0]:
+"Dot-com startups were burning millions on billboard ads and fiber optic infrastructure."
+Visual: Vox-style 2.5D paper cutout collage with archival stock certificates, newspaper headlines, and vintage dollar bills.
+
+Scene 4 [00:16.0 - 00:21.5]:
+"And yet, amidst the chaos, the modern digital architecture we rely on today was born."
+Visual: Kinetic typography with glowing word-by-word highlights and modern cloud architecture topology.
